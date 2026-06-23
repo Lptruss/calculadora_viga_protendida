@@ -51,7 +51,7 @@ def desenhar_esquema(pdf, bw, h, z_offset, x):
     pdf.set_draw_color(200, 0, 0)
     pdf.line(x_base, y_cabo, x_base + bw*escala, y_cabo)
     pdf.set_draw_color(0, 0, 0)
-    pdf.lin(h * escala + 15)
+    pdf.ln(h * escala + 15)
     
 # 2. Desenha o Diagrama de Tensões (ao lado da viga)
     x_diag = x_base + bw * escala + 30
