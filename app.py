@@ -35,42 +35,47 @@ def desenhar_esquema(pdf, bw, h, z_offset):
     x_base = 50
     y_base = pdf.get_y() + 10
     
-    # 1. Desenha a Seção (Retângulo)
+    # 1. Desenha a Seção (Retângulo da Viga)
     pdf.rect(x_base, y_base, bw * escala, h * escala)
     
     # Centroide (y_cg) e Cabo (z_offset)
     y_cg = y_base + (h/2) * escala
     y_cabo = y_base + (h - z_offset) * escala
     
-    # Linha do Centroide (Tracejada)
-    pdf.set_dash_pattern(dash=2, gap=2)
-    pdf.line(x_base - 10, y_cg, x_base + bw*escala + 10, y_cg)
-    pdf.set_dash_pattern()
-    pdf.text(x_base + bw*escala + 12, y_cg + 1, 'CG')
+    # Linha do Centroide (Linha fina contínua preta para evitar erros)
+    pdf.set_line_width(0.1)
+    pdf.line(x_base - 5, y_cg, x_base + bw*escala + 5, y_cg)
+    pdf.text(x_base + bw*escala + 7, y_cg + 1, 'CG')
     
     # Linha do Cabo (Vermelha)
     pdf.set_draw_color(200, 0, 0)
+    pdf.set_line_width(0.3)
     pdf.line(x_base, y_cabo, x_base + bw*escala, y_cabo)
     pdf.set_draw_color(0, 0, 0)
     
-# 2. Desenha o Diagrama de Tensões (ao lado)
-# Desenho da Linha Neutra (N.A.) - Alternativa técnica sem tracejado
-    pdf.set_draw_color(128, 128, 128)  # Cor Cinza
-    pdf.set_line_width(0.1)           # Linha bem fina
+    # 2. Desenha o Diagrama de Tensões (ao lado)
+    x_diag = x_base + bw * escala + 30 # A VARIÁVEL ESTÁ AQUI AGORA
+    pdf.set_line_width(0.2)
+    pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo das tensões
     
+    # Desenho da Linha Neutra (N.A.) - Cinza e fina
+    pdf.set_draw_color(128, 128, 128)
+    pdf.set_line_width(0.1)
     y_na = y_base + (h * 0.4) * escala 
     pdf.line(x_diag - 5, y_na, x_diag + 25, y_na)
     pdf.text(x_diag + 27, y_na + 1, 'N.A.')
     
-    # Restaura as configurações para desenhar o resto do diagrama
+    # Desenha o triângulo de tensões (Azul)
+    pdf.set_draw_color(0, 0, 200)
     pdf.set_line_width(0.2)
-    pdf.set_draw_color(0, 0, 0)
-    
-    # Desenha o diagrama (triângulo de tensões)
-    pdf.set_draw_color(0, 0, 200) # Azul
     pdf.line(x_diag, y_base, x_diag + 20, y_base) 
     pdf.line(x_diag, y_base + h * escala, x_diag + 10, y_base + h * escala) 
     pdf.line(x_diag + 20, y_base, x_diag + 10, y_base + h * escala)
+    
+    # Reseta cor e espessura final
+    pdf.set_draw_color(0, 0, 0)
+    pdf.set_line_width(0.2)
+    pdf.ln(h * escala + 15)
 
 def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiva, Msd, Mrd, x, x_d, status, df_perdas, z_offset):
     pdf = RelatorioPDF()
