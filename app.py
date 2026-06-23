@@ -27,37 +27,43 @@ class RelatorioPDF(FPDF):
         self.cell(0, 10, 'Relatorio de Calculo - Viga de Concreto Protendido', border=1, align='C')
         self.ln(15)
 
-def desenhar_esquema(pdf, bw, h, z_offset, tensao_max, tensao_min):
+def desenhar_esquema(pdf, bw, h, z_offset):
     pdf.set_font('Arial', 'B', 12)
-    pdf.cell(0, 10, '5. Esquema da Secao e Diagrama de Tensoes', ln=True)
+    pdf.cell(0, 10, '5. Esquema Geometrico e Diagrama de Tensoes', ln=True)
     
     escala = 0.5
-    x_base = 60
+    x_base = 50
     y_base = pdf.get_y() + 10
     
-    # 1. Desenha a Viga
+    # 1. Desenha a Seção (Retângulo)
     pdf.rect(x_base, y_base, bw * escala, h * escala)
+    
+    # Centroide (y_cg) e Cabo (z_offset)
+    y_cg = y_base + (h/2) * escala
     y_cabo = y_base + (h - z_offset) * escala
+    
+    # Linha do Centroide (Tracejada)
+    pdf.set_dash_pattern(dash=2, gap=2)
+    pdf.line(x_base - 10, y_cg, x_base + bw*escala + 10, y_cg)
+    pdf.set_dash_pattern()
+    pdf.text(x_base + bw*escala + 12, y_cg + 1, 'CG')
+    
+    # Linha do Cabo (Vermelha)
     pdf.set_draw_color(200, 0, 0)
-    pdf.line(x_base, y_cabo, x_base + (bw * escala), y_cabo)
+    pdf.line(x_base, y_cabo, x_base + bw*escala, y_cabo)
     pdf.set_draw_color(0, 0, 0)
     
-    # 2. Desenha o Diagrama de Tensões (ao lado)
-    x_diag = x_base + bw * escala + 30
-    pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo central
+    # 2. Diagrama de Tensões (Triângulo de tensões)
+    x_diag = x_base + bw * escala + 40
+    pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo das tensões
     
-    # Desenha o triângulo/trapézio de tensões simplificado
-    pdf.set_draw_color(0, 0, 200) # Azul para as tensões
-    pdf.line(x_diag, y_base, x_diag + 20, y_base) # Topo
-    pdf.line(x_diag, y_base + h * escala, x_diag + 20, y_base + h * escala) # Base
-    pdf.line(x_diag + 20, y_base, x_diag, y_base + h * escala) # Diagonal de tensão
+    # Desenho do diagrama (exemplo linear)
+    pdf.set_draw_color(0, 0, 200)
+    pdf.line(x_diag, y_base, x_diag + 25, y_base) # Tensão superior
+    pdf.line(x_diag, y_base + h * escala, x_diag + 10, y_base + h * escala) # Tensão inferior
+    pdf.line(x_diag + 25, y_base, x_diag + 10, y_base + h * escala) # Reta de tensão
     
-    # Legendas
-    pdf.set_font('Arial', '', 8)
-    pdf.text(x_diag + 22, y_base + 3, 'Tensao Max')
-    pdf.text(x_diag + 22, y_base + h * escala, 'Tensao Min')
-    
-    pdf.ln(h * escala + 15)
+    pdf.ln(h * escala + 20)
 
 def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiva, Msd, Mrd, x, x_d, status, df_perdas, z_offset):
     pdf = RelatorioPDF()
@@ -115,7 +121,7 @@ def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiv
     pdf.ln(10)
 
     # Chama o desenho da viga
-    desenhar_esquema(pdf, bw, h, z_offset, 0, 0)
+    desenhar_esquema(pdf, bw, h, z_offset)
     
     # 4. Detalhamento
     pdf.set_font('Arial', 'B', 12)
