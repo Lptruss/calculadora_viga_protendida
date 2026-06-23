@@ -27,7 +27,7 @@ class RelatorioPDF(FPDF):
         self.cell(0, 10, 'Relatorio de Calculo - Viga de Concreto Protendido', border=1, align='C')
         self.ln(15)
 
-def desenhar_esquema(pdf, bw, h, z_offset):
+def desenhar_esquema(pdf, bw, h, z_offset, x):
     pdf.set_font('Arial', 'B', 12)
     pdf.cell(0, 10, '5. Esquema Geometrico e Diagrama de Tensoes', ln=True)
     
@@ -38,39 +38,42 @@ def desenhar_esquema(pdf, bw, h, z_offset):
     # 1. Desenha a Seção (Retângulo da Viga)
     pdf.rect(x_base, y_base, bw * escala, h * escala)
     
-    # Centroide (y_cg) e Cabo (z_offset)
+    # Centroide e Cabo
     y_cg = y_base + (h/2) * escala
     y_cabo = y_base + (h - z_offset) * escala
     
-    # Linha do Centroide (Linha fina contínua preta para evitar erros)
+    # Linha do CG
     pdf.set_line_width(0.1)
     pdf.line(x_base - 5, y_cg, x_base + bw*escala + 5, y_cg)
     pdf.text(x_base + bw*escala + 7, y_cg + 1, 'CG')
     
     # Linha do Cabo (Vermelha)
     pdf.set_draw_color(200, 0, 0)
-    pdf.set_line_width(0.3)
     pdf.line(x_base, y_cabo, x_base + bw*escala, y_cabo)
     pdf.set_draw_color(0, 0, 0)
     
-    # 2. Desenha o Diagrama de Tensões (ao lado)
-    x_diag = x_base + bw * escala + 30 # A VARIÁVEL ESTÁ AQUI AGORA
-    pdf.set_line_width(0.2)
-    pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo das tensões
+    # 2. Desenha o Diagrama de Tensões
+    x_diag = x_base + bw * escala + 30
+    pdf.line(x_diag, y_base, x_diag, y_base + h * escala)
     
-    # Desenho da Linha Neutra (N.A.) - Cinza e fina
+    # Desenho da Linha Neutra (N.A.) baseada na variável 'x'
+    # O valor 'x' é medido a partir da fibra comprimida (topo da viga)
     pdf.set_draw_color(128, 128, 128)
-    pdf.set_line_width(0.1)
-    y_na = y_base + (h * 0.4) * escala 
+    pdf.set_line_width(0.2)
+    
+    # A posição y_na considera que x é a distância do topo
+    y_na = y_base + (x * escala) 
+    
     pdf.line(x_diag - 5, y_na, x_diag + 25, y_na)
-    pdf.text(x_diag + 27, y_na + 1, 'Linha Neutra')
+    pdf.text(x_diag + 27, y_na + 1, f'N.A. (x={x:.1f} cm)')
     
     # Desenha o triângulo de tensões (Azul)
     pdf.set_draw_color(0, 0, 200)
-    pdf.set_line_width(0.2)
     pdf.line(x_diag, y_base, x_diag + 20, y_base) 
-    pdf.line(x_diag, y_base + h * escala, x_diag + 10, y_base + h * escala) 
-    pdf.line(x_diag + 20, y_base, x_diag + 10, y_base + h * escala)
+    pdf.line(x_diag, y_base + x * escala, x_diag, y_base + x * escala) # Ponto zero da tensão na N.A.
+    pdf.line(x_diag + 20, y_base, x_diag, y_base + x * escala)
+    
+    pdf.ln(h * escala + 15)
     
     # Reseta cor e espessura final
     pdf.set_draw_color(0, 0, 0)
