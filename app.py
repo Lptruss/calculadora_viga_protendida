@@ -27,31 +27,35 @@ class RelatorioPDF(FPDF):
         self.cell(0, 10, 'Relatorio de Calculo - Viga de Concreto Protendido', border=1, align='C')
         self.ln(15)
 
-def desenhar_esquema(pdf, bw, h, z_offset):
+def desenhar_esquema(pdf, bw, h, z_offset, tensao_max, tensao_min):
     pdf.set_font('Arial', 'B', 12)
-    pdf.cell(0, 10, '5. Esquema da Secao Transversal', ln=True)
+    pdf.cell(0, 10, '5. Esquema da Secao e Diagrama de Tensoes', ln=True)
     
-    # Coordenadas relativas para o desenho
-    escala = 0.5  # Para ajustar o tamanho no papel
-    x_pos = 80    # Posição X centralizada
-    y_pos = pdf.get_y() + 10
+    escala = 0.5
+    x_base = 60
+    y_base = pdf.get_y() + 10
     
-    # Desenha o retângulo da viga
-    pdf.rect(x_pos, y_pos, bw * escala, h * escala)
+    # 1. Desenha a Viga
+    pdf.rect(x_base, y_base, bw * escala, h * escala)
+    y_cabo = y_base + (h - z_offset) * escala
+    pdf.set_draw_color(200, 0, 0)
+    pdf.line(x_base, y_cabo, x_base + (bw * escala), y_cabo)
+    pdf.set_draw_color(0, 0, 0)
     
-    # Desenha a linha da cordoalha (posição z_offset)
-    y_cabo = y_pos + (h - z_offset) * escala
-    pdf.set_draw_color(200, 0, 0) # Cor vermelha para o cabo
-    pdf.set_line_width(1)
-    pdf.line(x_pos, y_cabo, x_pos + (bw * escala), y_cabo)
-    pdf.set_draw_color(0, 0, 0) # Restaura cor preta
-    pdf.set_line_width(0.2)
+    # 2. Desenha o Diagrama de Tensões (ao lado)
+    x_diag = x_base + bw * escala + 30
+    pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo central
+    
+    # Desenha o triângulo/trapézio de tensões simplificado
+    pdf.set_draw_color(0, 0, 200) # Azul para as tensões
+    pdf.line(x_diag, y_base, x_diag + 20, y_base) # Topo
+    pdf.line(x_diag, y_base + h * escala, x_diag + 20, y_base + h * escala) # Base
+    pdf.line(x_diag + 20, y_base, x_diag, y_base + h * escala) # Diagonal de tensão
     
     # Legendas
-    pdf.set_font('Arial', '', 9)
-    pdf.text(x_pos + (bw * escala) + 5, y_pos + (h * escala / 2), f'h = {h} cm')
-    pdf.text(x_pos, y_pos - 2, f'bw = {bw} cm')
-    pdf.text(x_pos + (bw * escala) + 5, y_cabo, 'Cordoalha')
+    pdf.set_font('Arial', '', 8)
+    pdf.text(x_diag + 22, y_base + 3, 'Tensao Max')
+    pdf.text(x_diag + 22, y_base + h * escala, 'Tensao Min')
     
     pdf.ln(h * escala + 15)
 
