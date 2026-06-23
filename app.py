@@ -53,17 +53,26 @@ def desenhar_esquema(pdf, bw, h, z_offset):
     pdf.line(x_base, y_cabo, x_base + bw*escala, y_cabo)
     pdf.set_draw_color(0, 0, 0)
     
-    # 2. Diagrama de Tensões (Triângulo de tensões)
-    x_diag = x_base + bw * escala + 40
+# 2. Desenha o Diagrama de Tensões (ao lado)
+    x_diag = x_base + bw * escala + 30
     pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo das tensões
     
-    # Desenho do diagrama (exemplo linear)
-    pdf.set_draw_color(0, 0, 200)
-    pdf.line(x_diag, y_base, x_diag + 25, y_base) # Tensão superior
-    pdf.line(x_diag, y_base + h * escala, x_diag + 10, y_base + h * escala) # Tensão inferior
-    pdf.line(x_diag + 25, y_base, x_diag + 10, y_base + h * escala) # Reta de tensão
+    # Desenho da Linha Neutra (Linha fina e clara)
+    pdf.set_draw_color(100, 100, 100) # Cor cinza para a N.A.
+    pdf.set_line_width(0.1) # Linha bem fina
+    y_na = y_base + (h * 0.4) * escala 
+    pdf.line(x_diag - 5, y_na, x_diag + 25, y_na)
+    pdf.text(x_diag + 27, y_na + 1, 'N.A.')
     
-    pdf.ln(h * escala + 20)
+    # Restaura espessura e cor padrão
+    pdf.set_line_width(0.2)
+    pdf.set_draw_color(0, 0, 0)
+    
+    # Desenha o diagrama (triângulo de tensões)
+    pdf.set_draw_color(0, 0, 200) # Azul
+    pdf.line(x_diag, y_base, x_diag + 20, y_base) 
+    pdf.line(x_diag, y_base + h * escala, x_diag + 10, y_base + h * escala) 
+    pdf.line(x_diag + 20, y_base, x_diag + 10, y_base + h * escala)
 
 def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiva, Msd, Mrd, x, x_d, status, df_perdas, z_offset):
     pdf = RelatorioPDF()
