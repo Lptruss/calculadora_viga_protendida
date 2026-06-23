@@ -136,7 +136,7 @@ def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiv
     pdf.ln(10)
 
     # Chama o desenho da viga
-    desenhar_esquema(pdf, bw, h, z_offset)
+    desenhar_esquema(pdf, bw, h, z_offset, x)
     
     # 4. Detalhamento
     pdf.set_font('Arial', 'B', 12)
