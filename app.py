@@ -63,7 +63,7 @@ def desenhar_esquema(pdf, bw, h, z_offset):
     pdf.set_line_width(0.1)
     y_na = y_base + (h * 0.4) * escala 
     pdf.line(x_diag - 5, y_na, x_diag + 25, y_na)
-    pdf.text(x_diag + 27, y_na + 1, 'N.A.')
+    pdf.text(x_diag + 27, y_na + 1, 'Linha Neutra')
     
     # Desenha o triângulo de tensões (Azul)
     pdf.set_draw_color(0, 0, 200)
