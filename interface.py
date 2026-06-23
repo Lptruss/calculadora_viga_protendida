@@ -33,9 +33,11 @@ if st.button("🚀 Executar Análise Estrutural"):
     with st.spinner("Resolvendo equações e gerando relatórios..."):
         try:
             flecha, arquivo_excel, arquivo_pdf = tcc.executar_analise(
-                L=L, bw=bw, h=h, f=f, z_offset=z_offset, div_x=div_x,
-                sigma_protensao=sigma_protensao, A_trelica=A_trelica,
-                pressao_superficie=pressao_superficie, Forca_pontual=Forca_pontual
+                L=L, bw=bw, h=h, f=f, z_offset=z_offset, div_x=div_x, div_y=2,
+                sigma_protensao=sigma_protensao, A_trelica=A_trelica, 
+                E_trelica=20000, E_solido=3067, v_solido=0.2, 
+                peso_especifico_solido=25e-6, pressao_superficie=pressao_superficie, 
+                Forca_pontual=Forca_pontual
             )
             
             st.success("🎯 Análise Concluída!")
