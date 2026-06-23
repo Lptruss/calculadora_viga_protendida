@@ -10,9 +10,19 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 from fpdf import FPDF
 import os
+from datetime import datetime, timedelta, timezone
 
 class RelatorioPDF(FPDF):
     def header(self):
+        # 1. Imprime a Página e a Data no topo (em itálico)
+        self.set_font('Arial', 'I', 9)
+        fuso_br = timezone(timedelta(hours=-3)) # Ajusta para o fuso do Brasil
+        data_hora = datetime.now(fuso_br).strftime("%d/%m/%Y %H:%M")
+        texto_topo = f"Página {self.page_no()} | Gerado em {data_hora}"
+        self.cell(0, 5, texto_topo, border=0, ln=True, align='L')
+        self.ln(3) # Dá um pequeno espaço
+        
+        # 2. Imprime o Título Principal
         self.set_font('Arial', 'B', 14)
         self.cell(0, 10, 'Relatorio de Calculo - Viga de Concreto Protendido', border=1, align='C')
         self.ln(15)
