@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Interface Web Limpa
+Interface Web com Download de Planilha e PDF
 """
 
 import streamlit as st
@@ -30,9 +30,9 @@ st.sidebar.header("🕸️ Refinamento da Malha MEF")
 div_x = st.sidebar.slider("Divisões em X (Comprimento)", min_value=10, max_value=60, value=30, step=2)
 
 if st.button("🚀 Executar Análise Estrutural"):
-    with st.spinner("Resolvendo equações e gerando planilhas..."):
+    with st.spinner("Resolvendo equações e gerando relatórios..."):
         try:
-            flecha, arquivo_excel = tcc.executar_analise(
+            flecha, arquivo_excel, arquivo_pdf = tcc.executar_analise(
                 L=L, bw=bw, h=h, f=f, z_offset=z_offset, div_x=div_x,
                 sigma_protensao=sigma_protensao, A_trelica=A_trelica,
                 pressao_superficie=pressao_superficie, Forca_pontual=Forca_pontual
@@ -41,13 +41,23 @@ if st.button("🚀 Executar Análise Estrutural"):
             st.success("🎯 Análise Concluída!")
             st.metric(label="📊 Flecha no Centro da Viga", value=f"{flecha:.4f} cm")
             
-            with open(arquivo_excel, "rb") as f_excel:
-                st.download_button(
-                    label="📥 Baixar Planilha de Resultados (Excel)",
-                    data=f_excel,
-                    file_name="Resultados_MEF_Viga.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+            col1, col2 = st.columns(2)
+            with col1:
+                with open(arquivo_excel, "rb") as f_excel:
+                    st.download_button(
+                        label="📥 Baixar Planilha (Excel)",
+                        data=f_excel,
+                        file_name="Resultados_MEF_Viga.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    )
+            with col2:
+                with open(arquivo_pdf, "rb") as f_pdf:
+                    st.download_button(
+                        label="📄 Baixar Relatório (PDF)",
+                        data=f_pdf,
+                        file_name="Relatorio_Viga_Protendida.pdf",
+                        mime="application/pdf"
+                    )
                 
         except Exception as erro:
             st.error(f"Erro numérico: {erro}")
