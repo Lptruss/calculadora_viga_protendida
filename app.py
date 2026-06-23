@@ -52,33 +52,28 @@ def desenhar_esquema(pdf, bw, h, z_offset, x):
     pdf.line(x_base, y_cabo, x_base + bw*escala, y_cabo)
     pdf.set_draw_color(0, 0, 0)
     
-    # 2. Desenha o Diagrama de Tensões
+# 2. Desenha o Diagrama de Tensões (ao lado da viga)
     x_diag = x_base + bw * escala + 30
-    pdf.line(x_diag, y_base, x_diag, y_base + h * escala)
+    pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo vertical das tensões
     
-    # Desenho da Linha Neutra (N.A.) baseada na variável 'x'
-    # O valor 'x' é medido a partir da fibra comprimida (topo da viga)
+    # Linha Neutra (Linha cinza horizontal)
+    y_na = y_base + (x * escala)
     pdf.set_draw_color(128, 128, 128)
-    pdf.set_line_width(0.2)
-    
-    # A posição y_na considera que x é a distância do topo
-    y_na = y_base + (x * escala) 
-    
     pdf.line(x_diag - 5, y_na, x_diag + 25, y_na)
-    pdf.text(x_diag + 27, y_na + 1, f'N.A. (x={x:.1f} cm)')
+    pdf.text(x_diag + 27, y_na + 1, 'L.N.')
     
-    # Desenha o triângulo de tensões (Azul)
-    pdf.set_draw_color(0, 0, 200)
-    pdf.line(x_diag, y_base, x_diag + 20, y_base) 
-    pdf.line(x_diag, y_base + x * escala, x_diag, y_base + x * escala) # Ponto zero da tensão na N.A.
-    pdf.line(x_diag + 20, y_base, x_diag, y_base + x * escala)
-    
-    pdf.ln(h * escala + 15)
-    
-    # Reseta cor e espessura final
-    pdf.set_draw_color(0, 0, 0)
+    # Desenha o diagrama (Triângulo de compressão e Triângulo de tração)
+    pdf.set_draw_color(0, 0, 200) # Azul
     pdf.set_line_width(0.2)
-    pdf.ln(h * escala + 15)
+    
+    # Parte superior (Compressão): Vai do topo até a Linha Neutra
+    pdf.line(x_diag, y_base, x_diag + 20, y_base)            # Tensão máxima no topo
+    pdf.line(x_diag + 20, y_base, x_diag, y_na)              # Reta até o zero na L.N.
+    
+    # Parte inferior (Tração): Vai da Linha Neutra até a base
+    pdf.line(x_diag, y_na, x_diag - 15, y_base + h * escala)  # Reta até a tensão na base
+    pdf.line(x_diag - 15, y_base + h * escala, x_diag, y_base + h * escala) # Tensão máxima na base
+    pdf.line(x_diag, y_base + h * escala, x_diag, y_na)      # Fechamento no eixo
 
 def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiva, Msd, Mrd, x, x_d, status, df_perdas, z_offset):
     pdf = RelatorioPDF()
