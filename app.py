@@ -54,17 +54,15 @@ def desenhar_esquema(pdf, bw, h, z_offset):
     pdf.set_draw_color(0, 0, 0)
     
 # 2. Desenha o Diagrama de Tensões (ao lado)
-    x_diag = x_base + bw * escala + 30
-    pdf.line(x_diag, y_base, x_diag, y_base + h * escala) # Eixo das tensões
+# Desenho da Linha Neutra (N.A.) - Alternativa técnica sem tracejado
+    pdf.set_draw_color(128, 128, 128)  # Cor Cinza
+    pdf.set_line_width(0.1)           # Linha bem fina
     
-    # Desenho da Linha Neutra (Linha fina e clara)
-    pdf.set_draw_color(100, 100, 100) # Cor cinza para a N.A.
-    pdf.set_line_width(0.1) # Linha bem fina
     y_na = y_base + (h * 0.4) * escala 
     pdf.line(x_diag - 5, y_na, x_diag + 25, y_na)
     pdf.text(x_diag + 27, y_na + 1, 'N.A.')
     
-    # Restaura espessura e cor padrão
+    # Restaura as configurações para desenhar o resto do diagrama
     pdf.set_line_width(0.2)
     pdf.set_draw_color(0, 0, 0)
     
