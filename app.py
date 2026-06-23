@@ -61,7 +61,7 @@ def desenhar_esquema(pdf, bw, h, z_offset, x):
     y_na = y_base + (x * escala)
     pdf.set_draw_color(128, 128, 128)
     pdf.line(x_diag - 5, y_na, x_diag + 25, y_na)
-    pdf.text(x_diag + 27, y_na + 1, 'L.N.')
+    pdf.text(x_diag + 27, y_na + 1, f'Linha Neutra (x={x:.1f} cm)')
     
     # Desenha o diagrama (Triângulo de compressão e Triângulo de tração)
     pdf.set_draw_color(0, 0, 200) # Azul
