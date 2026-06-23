@@ -59,7 +59,7 @@ def desenhar_esquema(pdf, bw, h, z_offset, tensao_max, tensao_min):
     
     pdf.ln(h * escala + 15)
 
-def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiva, Msd, Mrd, x, x_d, status, df_perdas):
+def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiva, Msd, Mrd, x, x_d, status, df_perdas, z_offset):
     pdf = RelatorioPDF()
     pdf.add_page()
     
@@ -115,7 +115,7 @@ def gerar_pdf(L, bw, h, E_sol, Ap, P0, contraflecha, flecha_total, tensao_efetiv
     pdf.ln(10)
 
     # Chama o desenho da viga
-    desenhar_esquema(pdf, bw, h, z_offset)
+    desenhar_esquema(pdf, bw, h, z_offset, 0, 0)
     
     # 4. Detalhamento
     pdf.set_font('Arial', 'B', 12)
@@ -286,8 +286,8 @@ def estimar_elu(L, bw, h, f, pressao_superficie, Forca_pontual, A_trelica, sigma
     return Msd, Mrd, x, x_d, status
 
 def executar_analise(L, bw, h, f, z_offset, div_x, div_y, 
-                     sigma_protensao=150, A_trelica=8, E_trelica=20000, E_solido=3067, 
-                     v_solido=0.2, peso_especifico_solido=25e-6, pressao_superficie, 
+                     sigma_protensao, A_trelica, E_trelica, E_solido, 
+                     v_solido, peso_especifico_solido, pressao_superficie, 
                      Forca_pontual, faixa_y=1):
     if div_x % 2 != 0: div_x += 1
     params_perdas = {'mu': 0.05, 'k_cm': 3e-6, 'g_ancoragem': 0.6, 'peso_especifico_solido': peso_especifico_solido, 'phi_inf': 2.2, 'eps_cs_inf': 0.00033, 'psi_inf_final': 0.0733975, 'pressao_superficie': pressao_superficie, 'Forca_pontual': Forca_pontual}
@@ -359,6 +359,6 @@ def executar_analise(L, bw, h, f, z_offset, div_x, div_y,
         df_final.to_excel(writer, sheet_name='Resultados_Trelica')
 
     Msd, Mrd, x, x_d, status = estimar_elu(L, bw, h, f, pressao_superficie, Forca_pontual, A_trelica, sigma_protensao, peso_especifico_solido)
-    pdf_file = gerar_pdf(L, bw, h, E_solido, A_trelica, sigma_protensao * A_trelica, contraflecha, flecha_total, df_final['Tensao_Final_Efetiva_kN_cm2'].mean(), Msd, Mrd, x, x_d, status, df_final)
+    pdf_file = gerar_pdf(L, bw, h, E_solido, A_trelica, sigma_protensao * A_trelica, contraflecha, flecha_total, df_final['Tensao_Final_Efetiva_kN_cm2'].mean(), Msd, Mrd, x, x_d, status, df_final, z_offset)
 
     return flecha_total, excel_file, pdf_file
