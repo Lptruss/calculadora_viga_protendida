@@ -285,10 +285,10 @@ def estimar_elu(L, bw, h, f, pressao_superficie, Forca_pontual, A_trelica, sigma
     status = "APROVADO" if Mrd >= Msd else "REPROVADO"
     return Msd, Mrd, x, x_d, status
 
-def executar_analise(L=600, bw=20, h=60, f=8, z_offset=31, div_x=30, div_y=2, 
+def executar_analise(L, bw, h, f, z_offset, div_x, div_y, 
                      sigma_protensao=150, A_trelica=8, E_trelica=20000, E_solido=3067, 
-                     v_solido=0.2, peso_especifico_solido=25e-6, pressao_superficie=0.0005, 
-                     Forca_pontual=50, faixa_y=1):
+                     v_solido=0.2, peso_especifico_solido=25e-6, pressao_superficie, 
+                     Forca_pontual, faixa_y=1):
     if div_x % 2 != 0: div_x += 1
     params_perdas = {'mu': 0.05, 'k_cm': 3e-6, 'g_ancoragem': 0.6, 'peso_especifico_solido': peso_especifico_solido, 'phi_inf': 2.2, 'eps_cs_inf': 0.00033, 'psi_inf_final': 0.0733975, 'pressao_superficie': pressao_superficie, 'Forca_pontual': Forca_pontual}
 
